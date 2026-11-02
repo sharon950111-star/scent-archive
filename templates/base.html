@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}Scent Archive{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Noto+Serif+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --cream: #f7f2e9;
+            --paper: #fffdf9;
+            --paper-dark: #eee4d5;
+
+            /* 咖啡色系強化 */
+            --coffee: #5c3a21;
+            --coffee-dark: #382113;
+            --coffee-light: #8c6243;
+            --coffee-border: #442817;
+
+            --gold: #b38b59;
+            --gold-light: #ecd6b8;
+
+            --text: #413025;
+            --muted: #8c7767;
+
+            --shadow-soft: 0 14px 34px rgba(56, 33, 19, 0.09);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            position: relative;
+            isolation: isolate;
+            overflow-x: hidden;
+            margin: 0;
+            min-height: 100vh;
+
+            color: var(--text);
+            font-family: "Noto Serif TC", serif;
+
+            background:
+                radial-gradient(ellipse at 10% 12%, rgba(179, 139, 89, 0.15), transparent 32%),
+                radial-gradient(ellipse at 90% 80%, rgba(92, 58, 33, 0.10), transparent 35%),
+                var(--cream);
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* ==================================================
+           左右兩側背景裝飾：楓葉 + 線條花卉（溫和左右擺動）
+        ================================================== */
+
+        .botanical {
+            position: fixed;
+            z-index: -1;
+            top: 15%;
+            width: 220px;
+            height: 640px;
+            color: var(--coffee);
+            opacity: 0.22;
+            pointer-events: none;
+            transform-origin: top center;
+        }
+
+        .botanical-left {
+            left: 5px;
+            animation: sway-left 8s ease-in-out infinite alternate;
+        }
+
+        .botanical-right {
+            right: 5px;
+            transform: scaleX(-1);
+            animation: sway-right 9s ease-in-out infinite alternate;
+        }
+
+        .botanical svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        .vine-stem {
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2.2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .vine-tendril {
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.6;
+            stroke-linecap: round;
+            stroke-dasharray: 4 2;
+        }
+
+        /* 楓葉線條：五裂標準掌狀 */
+        .maple-leaf {
+            fill: rgba(255, 253, 249, 0.35);
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .leaf-vein {
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.2;
+            opacity: 0.75;
+        }
+
+        /* 細線花朵與小蕾 */
+        .line-flower {
+            fill: rgba(255, 253, 249, 0.5);
+            stroke: currentColor;
+            stroke-width: 1.6;
+            stroke-linejoin: round;
+        }
+
+        @keyframes sway-left {
+            0% { transform: rotate(-3deg) translateY(0); }
+            50% { transform: rotate(1.5deg) translateY(4px); }
+            100% { transform: rotate(3.5deg) translateY(-2px); }
+        }
+
+        @keyframes sway-right {
+            0% { transform: scaleX(-1) rotate(-3.5deg) translateY(-2px); }
+            50% { transform: scaleX(-1) rotate(1deg) translateY(4px); }
+            100% { transform: scaleX(-1) rotate(3deg) translateY(0); }
+        }
+
+        /* ==================================================
+           HEADER
+        ================================================== */
+
+        .site-header {
+            position: relative;
+            padding: 42px 20px 30px;
+            text-align: center;
+            background: rgba(255, 253, 249, 0.96);
+            border-bottom: 3px solid var(--coffee-border);
+            box-shadow: 0 4px 18px rgba(56, 33, 19, 0.05);
+        }
+
+        .brand-link {
+            display: inline-block;
+            transition: transform 0.25s ease;
+        }
+
+        .brand-link:hover {
+            transform: scale(1.015);
+        }
+
+        .brand {
+            margin: 0;
+            font-family: "Cormorant Garamond", serif;
+            font-size: 48px;
+            font-weight: 700;
+            letter-spacing: 8px;
+            color: var(--coffee-dark);
+            text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.8);
+        }
+
+        .brand-subtitle {
+            margin-top: 8px;
+            display: block;
+            font-family: "Cormorant Garamond", serif;
+            font-size: 14px;
+            letter-spacing: 5px;
+            color: var(--coffee-light);
+            font-weight: 600;
+        }
+
+        .header-ornament {
+            margin-top: 14px;
+            color: var(--gold);
+            font-size: 16px;
+            letter-spacing: 10px;
+        }
+
+        /* ==================================================
+           NAVIGATION
+        ================================================== */
+
+        .navbar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 40px;
+            padding: 16px 20px;
+            background: var(--coffee-dark);
+            color: #fff9f0;
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .navbar a {
+            font-family: "Cormorant Garamond", serif;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 2.5px;
+            position: relative;
+            padding: 4px 0;
+            transition: color 0.25s ease;
+        }
+
+        .navbar a::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 1.5px;
+            background: var(--gold-light);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .navbar a:hover {
+            color: var(--gold-light);
+        }
+
+        .navbar a:hover::after {
+            width: 100%;
+        }
+
+        /* ==================================================
+           MAIN CONTAINER & HEADINGS
+        ================================================== */
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: min(1080px, 90%);
+            margin: 48px auto;
+        }
+
+        .page-heading {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-heading h1 {
+            margin: 0;
+            font-family: "Cormorant Garamond", serif;
+            font-size: 42px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            color: var(--coffee-dark);
+        }
+
+        .page-heading p {
+            margin-top: 10px;
+            font-size: 13.5px;
+            letter-spacing: 2px;
+            color: var(--muted);
+        }
+
+        .heading-ornament {
+            margin-top: 12px;
+            color: var(--gold);
+            font-size: 18px;
+            letter-spacing: 8px;
+        }
+
+        /* ==================================================
+           CARD & SECTION：實心咖啡色藤蔓雙層邊框
+        ================================================== */
+
+        .card,
+        .section {
+            position: relative;
+            isolation: isolate;
+            margin-bottom: 36px;
+            padding: 44px 38px;
+            background: var(--paper);
+            
+            /* 實心深咖啡色外框 */
+            border: 3.5px solid var(--coffee-border);
+            border-radius: 24px 10px 24px 10px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        /* 內層藤蔓襯線細框 */
+        .card::before,
+        .section::before {
+            content: "";
+            position: absolute;
+            inset: 8px;
+            z-index: -1;
+            border: 1.5px solid var(--coffee-light);
+            border-radius: 18px 6px 18px 6px;
+            pointer-events: none;
+            opacity: 0.85;
+        }
+
+        /* 四角楓葉藤蔓雕花 */
+        .frame-vine {
+            position: absolute;
+            z-index: 2;
+            width: 60px;
+            height: 60px;
+            color: var(--coffee-border);
+            pointer-events: none;
+        }
+
+        .frame-vine svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .frame-vine.top-left {
+            top: 2px;
+            left: 2px;
+        }
+
+        .frame-vine.top-right {
+            top: 2px;
+            right: 2px;
+            transform: scaleX(-1);
+        }
+
+        .frame-vine.bottom-left {
+            bottom: 2px;
+            left: 2px;
+            transform: scaleY(-1);
+        }
+
+        .frame-vine.bottom-right {
+            bottom: 2px;
+            right: 2px;
+            transform: scale(-1);
+        }
+
+        /* ==================================================
+           BUTTONS：高對比實心咖啡框與厚實立體陰影
+        ================================================== */
+
+        .btn,
+        .button,
+        .view-archive,
+        button,
+        input[type="submit"],
+        input[type="button"] {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            min-height: 44px;
+            padding: 11px 26px;
+            
+            /* 背景與鮮明厚實框線 */
+            background: var(--coffee);
+            color: #fffdfa !important;
+            border: 2.8px solid var(--coffee-dark);
+            border-radius: 5px;
+            
+            font-family: "Noto Serif TC", serif;
+            font-size: 13.5px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            cursor: pointer;
+
+            /* 立體感深色下陰影 */
+            box-shadow: 0 4px 0 var(--coffee-dark), 0 6px 12px rgba(56, 33, 19, 0.2);
+            transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .btn:hover,
+        .button:hover,
+        .view-archive:hover,
+        button:hover,
+        input[type="submit"]:hover,
+        input[type="button"]:hover {
+            background: var(--coffee-dark);
+            color: var(--gold-light) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 var(--coffee-dark), 0 9px 16px rgba(56, 33, 19, 0.25);
+        }
+
+        .btn:active,
+        .button:active,
+        .view-archive:active,
+        button:active,
+        input[type="submit"]:active,
+        input[type="button"]:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 var(--coffee-dark);
+        }
+
+        /* 淺色次要按鈕：強調咖啡色實心框線 */
+        .btn-outline,
+        .view-archive-outline {
+            background: #fffdf9;
+            color: var(--coffee-dark) !important;
+            border: 2.8px solid var(--coffee-border);
+            box-shadow: 0 4px 0 var(--coffee-border), 0 5px 10px rgba(56, 33, 19, 0.12);
+        }
+
+        .btn-outline:hover,
+        .view-archive-outline:hover {
+            background: var(--coffee);
+            color: #fffdfa !important;
+            border-color: var(--coffee-dark);
+        }
+
+        /* ==================================================
+           FORMS, INPUTS & TABLES
+        ================================================== */
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 13px 16px;
+            margin: 8px 0 22px;
+            border: 2px solid #cebaa0;
+            border-radius: 4px;
+            background: #fffefb;
+            color: var(--text);
+            font-family: "Noto Serif TC", serif;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--coffee);
+            box-shadow: 0 0 0 3px rgba(92, 58, 33, 0.15);
+        }
+
+        label {
+            color: var(--coffee-dark);
+            font-size: 14.5px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 20px 0;
+            border: 2px solid var(--coffee-border);
+            border-radius: 6px;
+            overflow: hidden;
+            background: var(--paper);
+        }
+
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--paper-dark);
+        }
+
+        th {
+            background: #ebe0cf;
+            color: var(--coffee-dark);
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: #fbf7ee;
+        }
+
+        /* ==================================================
+           FOOTER
+        ================================================== */
+
+        .site-footer {
+            margin-top: 85px;
+            padding: 42px 20px;
+            text-align: center;
+            background: var(--coffee-dark);
+            color: #ebdccc;
+            border-top: 3px double var(--gold);
+        }
+
+        .footer-ornament {
+            margin-bottom: 14px;
+            color: var(--gold-light);
+            font-size: 18px;
+            letter-spacing: 8px;
+        }
+
+        .site-footer p {
+            margin: 6px;
+            font-family: "Cormorant Garamond", serif;
+            font-size: 14.5px;
+            letter-spacing: 3px;
+        }
+
+        /* ==================================================
+           RESPONSIVE & ACCESSIBILITY
+        ================================================== */
+
+        @media (max-width: 900px) {
+            .botanical {
+                width: 130px;
+                opacity: 0.14;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .botanical {
+                display: none; /* 小螢幕隱藏兩側裝飾，避免干擾閱讀 */
+            }
+            .brand {
+                font-size: 34px;
+                letter-spacing: 5px;
+            }
+            .card, .section {
+                padding: 30px 20px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .botanical-left,
+            .botanical-right {
+                animation: none;
+            }
+            * {
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 左側楓葉與線條花藤蔓（輕晃動態） -->
+    <div class="botanical botanical-left" aria-hidden="true">
+        <svg viewBox="0 0 220 640" xmlns="http://www.w3.org/2000/svg">
+            <!-- 主莖幹 -->
+            <path class="vine-stem" d="M35,0 C75,80 15,140 60,220 C105,300 20,360 65,450 C95,510 40,580 75,640" />
+            <path class="vine-tendril" d="M60,220 C95,190 120,205 130,175" />
+            <path class="vine-tendril" d="M65,450 C110,420 135,435 145,405" />
+
+            <!-- 分枝一：楓葉 -->
+            <path class="vine-stem" d="M48,110 Q20,95 5,75" />
+            <!-- 標準五裂掌狀楓葉 -->
+            <g transform="translate(-10, 20)">
+                <path class="maple-leaf" d="
+                    M 40,55 
+                    L 35,48 L 22,50 L 26,42 L 14,37 L 24,32 L 20,24 L 30,27 
+                    L 38,10 
+                    L 46,27 L 56,24 L 52,32 L 62,37 L 50,42 L 54,50 L 41,48 Z" />
+                <path class="leaf-vein" d="M38,52 L38,15 M38,45 L24,32 M38,45 L52,32 M38,48 L22,48 M38,48 L54,48" />
+            </g>
+
+            <!-- 分枝二：線條小花 -->
+            <path class="vine-stem" d="M60,220 Q105,200 135,210" />
+            <g transform="translate(130, 195)">
+                <!-- 復古線條山茶/野薔薇花朵 -->
+                <circle cx="15" cy="15" r="4" class="line-flower" />
+                <path class="line-flower" d="M15,5 C10,-2 20,-2 15,5 Z" />
+                <path class="line-flower" d="M25,15 C32,10 32,20 25,15 Z" />
+                <path class="line-flower" d="M15,25 C20,32 10,32 15,25 Z" />
+                <path class="line-flower" d="M5,15 C-2,20 -2,10 5,15 Z" />
+                <path class="leaf-vein" d="M8,8 Q3,1 0,5 M22,22 Q27,29 30,25" />
+            </g>
+
+            <!-- 分枝三：右伸五裂楓葉 -->
+            <path class="vine-stem" d="M60,330 Q110,310 140,290" />
+            <g transform="translate(125, 235) rotate(35)">
+                <path class="maple-leaf" d="
+                    M 40,55 
+                    L 35,48 L 22,50 L 26,42 L 14,37 L 24,32 L 20,24 L 30,27 
+                    L 38,10 
+                    L 46,27 L 56,24 L 52,32 L 62,37 L 50,42 L 54,50 L 41,48 Z" />
+                <path class="leaf-vein" d="M38,52 L38,15 M38,45 L24,32 M38,45 L52,32" />
+            </g>
+
+            <!-- 分枝四：線條小花蕾與嫩葉 -->
+            <path class="vine-stem" d="M55,420 Q15,400 0,385" />
+            <g transform="translate(0, 365)">
+                <path class="line-flower" d="M10,20 Q18,8 26,20 Q18,14 10,20 Z" />
+                <path class="leaf-vein" d="M18,17 L18,28" />
+            </g>
+
+            <!-- 分枝五：底部楓葉 -->
+            <path class="vine-stem" d="M68,520 Q30,510 15,490" />
+            <g transform="translate(0, 440) rotate(-20)">
+                <path class="maple-leaf" d="
+                    M 40,55 
+                    L 35,48 L 22,50 L 26,42 L 14,37 L 24,32 L 20,24 L 30,27 
+                    L 38,10 
+                    L 46,27 L 56,24 L 52,32 L 62,37 L 50,42 L 54,50 L 41,48 Z" />
+                <path class="leaf-vein" d="M38,52 L38,15 M38,45 L24,32 M38,45 L52,32" />
+            </g>
+        </svg>
+    </div>
+
+    <!-- 右側楓葉與線條花藤蔓（翻轉與異步搖曳） -->
+    <div class="botanical botanical-right" aria-hidden="true">
+        <svg viewBox="0 0 220 640" xmlns="http://www.w3.org/2000/svg">
+            <path class="vine-stem" d="M35,0 C75,80 15,140 60,220 C105,300 20,360 65,450 C95,510 40,580 75,640" />
+            <path class="vine-tendril" d="M60,220 C95,190 120,205 130,175" />
+            <path class="vine-tendril" d="M65,450 C110,420 135,435 145,405" />
+
+            <path class="vine-stem" d="M48,110 Q20,95 5,75" />
+            <g transform="translate(-10, 20)">
+                <path class="maple-leaf" d="M 40,55 L 35,48 L 22,50 L 26,42 L 14,37 L 24,32 L 20,24 L 30,27 L 38,10 L 46,27 L 56,24 L 52,32 L 62,37 L 50,42 L 54,50 L 41,48 Z" />
+                <path class="leaf-vein" d="M38,52 L38,15 M38,45 L24,32 M38,45 L52,32" />
+            </g>
+
+            <path class="vine-stem" d="M60,220 Q105,200 135,210" />
+            <g transform="translate(130, 195)">
+                <circle cx="15" cy="15" r="4" class="line-flower" />
+                <path class="line-flower" d="M15,5 C10,-2 20,-2 15,5 Z" />
+                <path class="line-flower" d="M25,15 C32,10 32,20 25,15 Z" />
+                <path class="line-flower" d="M15,25 C20,32 10,32 15,25 Z" />
+                <path class="line-flower" d="M5,15 C-2,20 -2,10 5,15 Z" />
+            </g>
+
+            <path class="vine-stem" d="M60,330 Q110,310 140,290" />
+            <g transform="translate(125, 235) rotate(35)">
+                <path class="maple-leaf" d="M 40,55 L 35,48 L 22,50 L 26,42 L 14,37 L 24,32 L 20,24 L 30,27 L 38,10 L 46,27 L 56,24 L 52,32 L 62,37 L 50,42 L 54,50 L 41,48 Z" />
+                <path class="leaf-vein" d="M38,52 L38,15 M38,45 L24,32 M38,45 L52,32" />
+            </g>
+
+            <path class="vine-stem" d="M55,420 Q15,400 0,385" />
+            <g transform="translate(0, 365)">
+                <path class="line-flower" d="M10,20 Q18,8 26,20 Q18,14 10,20 Z" />
+            </g>
+
+            <path class="vine-stem" d="M68,520 Q30,510 15,490" />
+            <g transform="translate(0, 440) rotate(-20)">
+                <path class="maple-leaf" d="M 40,55 L 35,48 L 22,50 L 26,42 L 14,37 L 24,32 L 20,24 L 30,27 L 38,10 L 46,27 L 56,24 L 52,32 L 62,37 L 50,42 L 54,50 L 41,48 Z" />
+                <path class="leaf-vein" d="M38,52 L38,15 M38,45 L24,32 M38,45 L52,32" />
+            </g>
+        </svg>
+    </div>
+
+    <!-- HEADER -->
+    <header class="site-header">
+        <a href="{{ url_for('index') }}" class="brand-link">
+            <h1 class="brand">SCENT ARCHIVE</h1>
+            <span class="brand-subtitle">THE ART OF FRAGRANCE</span>
+        </a>
+        <div class="header-ornament">♧ ─ ✧ ─ ♧</div>
+    </header>
+
+    <!-- NAVIGATION -->
+    <nav class="navbar">
+        <a href="{{ url_for('index') }}">HOME</a>
+        <a href="{{ url_for('add_scent') }}">ADD SCENT</a>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="container">
+        {% block content %}
+        <!-- 示範卡片：呈現四角藤蔓與高顯眼度按鈕 -->
+        <div class="card">
+            <!-- 四角藤蔓與楓葉角飾 -->
+            <div class="frame-vine top-left">
+                <svg viewBox="0 0 60 60">
+                    <path d="M4,55 C4,25 25,4 55,4 M4,4 C18,18 20,30 20,30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M12,12 L17,7 L20,13 L26,9 L24,17 L30,20 L22,23 Z" fill="currentColor"/>
+                </svg>
+            </div>
+            <div class="frame-vine top-right">
+                <svg viewBox="0 0 60 60">
+                    <path d="M4,55 C4,25 25,4 55,4 M4,4 C18,18 20,30 20,30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M12,12 L17,7 L20,13 L26,9 L24,17 L30,20 L22,23 Z" fill="currentColor"/>
+                </svg>
+            </div>
+            <div class="frame-vine bottom-left">
+                <svg viewBox="0 0 60 60">
+                    <path d="M4,55 C4,25 25,4 55,4 M4,4 C18,18 20,30 20,30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M12,12 L17,7 L20,13 L26,9 L24,17 L30,20 L22,23 Z" fill="currentColor"/>
+                </svg>
+            </div>
+            <div class="frame-vine bottom-right">
+                <svg viewBox="0 0 60 60">
+                    <path d="M4,55 C4,25 25,4 55,4 M4,4 C18,18 20,30 20,30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M12,12 L17,7 L20,13 L26,9 L24,17 L30,20 L22,23 Z" fill="currentColor"/>
+                </svg>
+            </div>
+
+            <h2 style="font-family:'Cormorant Garamond', serif; font-size:30px; margin-top:0; color:var(--coffee-dark);">ARCHIVE COLLECTION</h2>
+            <p style="line-height:2; font-size:14.5px;">典藏調香配方與香氣記憶。點擊下方按鈕即可查閱各款香氣詳細的香調輪廓與前中後調。</p>
+            
+            <div style="margin-top:25px; display:flex; gap:15px; flex-wrap:wrap;">
+                <a href="#" class="view-archive">VIEW ARCHIVE</a>
+                <a href="#" class="btn btn-outline">EXPLORE NOTES</a>
+            </div>
+        </div>
+        {% endblock %}
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <div class="footer-ornament">♧ ─ ✧ ─ ♧</div>
+        <p>SCENT ARCHIVE</p>
+        <p>EVERY SCENT TELLS A STORY</p>
+    </footer>
+
+</body>
+</html>
+
+
+
+
+
+
+

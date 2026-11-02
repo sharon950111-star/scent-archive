@@ -1,0 +1,49 @@
+
+{% extends "base.html" %}
+
+{% block title %}Scent Archive | Collection{% endblock %}
+
+{% block content %}
+
+<h1>My Scent Collection</h1>
+
+<p class="subtitle">
+    A personal archive of fragrances, memories and olfactory experiences.
+</p>
+
+<a href="{{ url_for('add_scent') }}" class="button">
+    + Add New Scent
+</a>
+
+<div class="scent-grid" style="margin-top: 35px;">
+
+    {% for scent in scents %}
+
+    <div class="card">
+
+        <p class="family">{{ scent.scent_family }}</p>
+
+        <h2>{{ scent.scent_name }}</h2>
+
+        <p>
+            {{ scent.olfactory_impression[:65] }}...
+        </p>
+
+        <p>★ {{ scent.rating }}/5</p>
+
+        <a href="{{ url_for('detail', scent_id=scent.id) }}"
+           class="button">
+            View Archive
+        </a>
+
+    </div>
+
+    {% else %}
+
+    <p>目前還沒有香氛紀錄，新增第一款吧。</p>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,51 @@
+
+{% extends "base.html" %}
+
+{% block title %}{{ scent.scent_name }} | Scent Archive{% endblock %}
+
+{% block content %}
+
+<a href="{{ url_for('index') }}">← Back to Collection</a>
+
+<h1>{{ scent.scent_name }}</h1>
+
+<p class="subtitle">{{ scent.scent_family }}</p>
+
+<div class="section">
+    <h2>01. Fragrance Pyramid</h2>
+
+    <h3>TOP NOTES｜前調</h3>
+    <p>{{ scent.fragrance_pyramid.top }}</p>
+
+    <h3>MIDDLE NOTES｜中調</h3>
+    <p>{{ scent.fragrance_pyramid.middle }}</p>
+
+    <h3>BASE NOTES｜後調</h3>
+    <p>{{ scent.fragrance_pyramid.base }}</p>
+</div>
+
+<div class="section">
+    <h2>02. Performance</h2>
+
+    <p>
+        <strong>Projection｜擴散度：</strong>
+        {{ scent.performance.projection }}
+    </p>
+
+    <p>
+        <strong>Longevity｜持香度：</strong>
+        {{ scent.performance.longevity }}
+    </p>
+</div>
+
+<div class="section">
+    <h2>03. Olfactory Impression</h2>
+    <p>{{ scent.olfactory_impression }}</p>
+</div>
+
+<div class="section">
+    <h2>04. Personal Rating</h2>
+    <p>★ {{ scent.rating }}/5</p>
+</div>
+
+{% endblock %}

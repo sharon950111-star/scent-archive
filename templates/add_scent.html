@@ -1,0 +1,89 @@
+
+{% extends "base.html" %}
+
+{% block title %}Add Scent | Scent Archive{% endblock %}
+
+{% block content %}
+
+<h1>Add a New Scent</h1>
+
+<p class="subtitle">
+    Record a new fragrance in your personal archive.
+</p>
+
+<form method="POST">
+
+    <div class="section">
+        <h2>Basic Information</h2>
+
+        <label>香氛名稱與品牌</label>
+        <input type="text" name="scent_name" required
+               placeholder="e.g. Miss Dior - Dior">
+
+        <label>主要香調家族</label>
+        <select name="scent_family" required>
+            <option value="">請選擇香調</option>
+            <option>Floral / 花香調</option>
+            <option>Woody / 木質調</option>
+            <option>Oriental / 東方調</option>
+            <option>Fresh / 清新調</option>
+            <option>Citrus / 柑橘調</option>
+            <option>Fruity / 果香調</option>
+            <option>Gourmand / 美食調</option>
+            <option>Chypre / 西普調</option>
+        </select>
+    </div>
+
+    <div class="section">
+        <h2>Fragrance Pyramid</h2>
+
+        <label>前調 Top Notes</label>
+        <input type="text" name="top">
+
+        <label>中調 Middle Notes</label>
+        <input type="text" name="middle">
+
+        <label>後調 Base Notes</label>
+        <input type="text" name="base">
+    </div>
+
+    <div class="section">
+        <h2>Performance</h2>
+
+        <label>擴散度 Projection</label>
+        <select name="projection">
+            <option>弱</option>
+            <option>中等</option>
+            <option>強</option>
+        </select>
+
+        <label>持香度 Longevity</label>
+        <input type="text" name="longevity"
+               placeholder="例如：6-8 小時">
+    </div>
+
+    <div class="section">
+        <h2>Olfactory Impression</h2>
+
+        <label>氣味意象與個人評測</label>
+        <textarea name="olfactory_impression"
+                  rows="5" required
+                  placeholder="記錄這款香氛帶給你的感受..."></textarea>
+
+        <label>個人評分（1-5）</label>
+        <select name="rating">
+            <option value="5">5 - Excellent</option>
+            <option value="4">4 - Very Good</option>
+            <option value="3">3 - Good</option>
+            <option value="2">2 - Fair</option>
+            <option value="1">1 - Poor</option>
+        </select>
+    </div>
+
+    <button type="submit" class="button">
+        Save to Archive
+    </button>
+
+</form>
+
+{% endblock %}
